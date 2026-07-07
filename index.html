@@ -147,6 +147,27 @@ body{font-family:'Barlow',sans-serif;background:var(--marrom);color:var(--creme)
 .btn-nova{width:100%;background:transparent;border:1px solid rgba(201,145,42,.3);color:var(--dourado);font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:.1em;text-transform:uppercase;padding:12px;border-radius:4px;cursor:pointer;margin-top:10px;transition:background .2s;}
 .btn-nova:hover{background:rgba(201,145,42,.08);}
 
+/* GRADE DE SENHAS */
+.grade-senha-wrap{margin-top:.25rem;}
+.grade-senha-legenda{display:flex;gap:16px;margin-bottom:.75rem;flex-wrap:wrap;}
+.legenda-item{display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.08em;color:var(--creme2);text-transform:uppercase;}
+.legenda-box{width:14px;height:14px;border-radius:3px;display:inline-block;}
+.legenda-disp{background:rgba(245,237,216,.06);border:1px solid rgba(201,145,42,.3);}
+.legenda-pend{background:rgba(224,193,42,.18);border:1px solid rgba(224,193,42,.45);}
+.legenda-conf{background:rgba(72,133,214,.18);border:1px solid rgba(72,133,214,.45);}
+.legenda-sel{background:var(--laranja);border:1px solid var(--laranja);}
+.grade-senha{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:8px;max-height:260px;overflow-y:auto;padding:14px;background:rgba(28,10,0,.5);border:1px solid rgba(201,145,42,.2);border-radius:6px;}
+.grade-senha::-webkit-scrollbar{width:8px;}
+.grade-senha::-webkit-scrollbar-track{background:rgba(245,237,216,.04);border-radius:4px;}
+.grade-senha::-webkit-scrollbar-thumb{background:rgba(201,145,42,.35);border-radius:4px;}
+.senha-btn{aspect-ratio:1;background:rgba(245,237,216,.06);border:1px solid rgba(201,145,42,.3);border-radius:4px;color:var(--creme);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s,border-color .15s,transform .1s;display:flex;align-items:center;justify-content:center;}
+.senha-btn:hover{background:rgba(201,145,42,.18);border-color:var(--dourado);transform:scale(1.05);}
+.senha-btn.ocupada{cursor:not-allowed;pointer-events:none;}
+.senha-btn.pendente{background:rgba(224,193,42,.18);border-color:rgba(224,193,42,.45);color:#e0c12a;}
+.senha-btn.confirmada{background:rgba(72,133,214,.18);border-color:rgba(72,133,214,.45);color:#6ba7e0;}
+.senha-btn.selecionada{background:var(--laranja);border-color:var(--laranja);color:#fff;transform:scale(1.05);}
+.senha-atual{margin-top:.6rem;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:.08em;color:var(--dourado-claro);text-align:center;min-height:18px;}
+
 
 /* MODO EM BREVE */
 .btn-disabled{opacity:.38;cursor:not-allowed;pointer-events:none;filter:grayscale(.5);}
@@ -313,6 +334,17 @@ footer{background:var(--marrom);border-top:1px solid rgba(201,145,42,.12);paddin
           <input type="tel" id="whatsapp" placeholder="(00) 9 0000-0000" autocomplete="off">
         </div>
       </div>
+      <div class="sec-form-titulo">Escolha até 3 senhas</div>
+      <div class="grade-senha-wrap">
+        <div class="grade-senha-legenda">
+          <span class="legenda-item"><span class="legenda-box legenda-disp"></span>Disponível</span>
+          <span class="legenda-item"><span class="legenda-box legenda-pend"></span>Aguardando confirmação</span>
+          <span class="legenda-item"><span class="legenda-box legenda-conf"></span>Confirmada</span>
+          <span class="legenda-item"><span class="legenda-box legenda-sel"></span>Selecionada</span>
+        </div>
+        <div class="grade-senha" id="grade-senha"></div>
+        <div class="senha-atual" id="senha-atual"></div>
+      </div>
       <input type="hidden" id="numero-senha" value="">
       
       <p class="msg-erro" id="msg-erro"></p>
@@ -338,44 +370,83 @@ footer{background:var(--marrom);border-top:1px solid rgba(201,145,42,.12);paddin
 </footer>
 
 <script>
-const WPP = '5588997196288';
+const WPP = '5588999999999';
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxkNa41s9UPezbO9CQjnJqs6we97D8KonA8mOikGgx38e83nBjVgPXO6s3H3Feb4EQR/exec';
 const CHAVE_SECRETA = '40056b334e54db6af71553f0155b4f60'; // precisa ser IGUAL à do Apps Script
 const CONFIG = {
-  local: { total: 200, ocupadas: new Set(), confirmadas: 0 },
-  fora:  { total: 100, ocupadas: new Set(), confirmadas: 0 }
+  local: { total: 200, ocupadas: new Set(), confirmadas: new Set() },
+  fora:  { total: 100, ocupadas: new Set(), confirmadas: new Set() }
 };
 let catAtual = 'local';
+let senhasSelecionadas = [];
+const MAX_SENHAS = 3;
 
 function trocarCategoria(cat) {
   catAtual = cat;
+  senhasSelecionadas = [];
+  document.getElementById('numero-senha').value = '';
+  document.getElementById('senha-atual').textContent = '';
   document.getElementById('tab-local').className = 'cat-tab cat-tab-local' + (cat==='local'?' ativo-local':'');
   document.getElementById('tab-fora').className  = 'cat-tab cat-tab-fora'  + (cat==='fora' ?' ativo-fora':'');
   const btn = document.getElementById('btn-reservar');
   btn.className = 'btn-reservar ' + (cat==='local' ? 'btn-reservar-local' : 'btn-reservar-fora');
   atualizarPills();
+  renderizarGradeSenhas();
 }
 
 function selecionarCategoria(cat) {
   trocarCategoria(cat);
 }
 
-function proximaSenhaDisponivel(cat) {
-  const cfg = CONFIG[cat];
+function renderizarGradeSenhas() {
+  const cfg = CONFIG[catAtual];
+  const grade = document.getElementById('grade-senha');
+  let html = '';
   for (let i = 1; i <= cfg.total; i++) {
-    if (!cfg.ocupadas.has(i)) return i;
+    const ocupada = cfg.ocupadas.has(i);
+    const confirmada = cfg.confirmadas.has(i);
+    const sel = senhasSelecionadas.includes(i);
+    const classes = ['senha-btn'];
+    if (ocupada) {
+      classes.push('ocupada');
+      classes.push(confirmada ? 'confirmada' : 'pendente');
+    }
+    if (sel) classes.push('selecionada');
+    html += `<button type="button" class="${classes.join(' ')}" ${ocupada?'disabled':''} onclick="selecionarSenha(${i})">${String(i).padStart(3,'0')}</button>`;
   }
-  return null;
+  grade.innerHTML = html;
+}
+
+function selecionarSenha(n) {
+  const cfg = CONFIG[catAtual];
+  if (cfg.ocupadas.has(n)) return;
+
+  const idx = senhasSelecionadas.indexOf(n);
+  if (idx !== -1) {
+    senhasSelecionadas.splice(idx, 1);
+  } else {
+    if (senhasSelecionadas.length >= MAX_SENHAS) {
+      return erro(`Você já escolheu o máximo de ${MAX_SENHAS} senhas. Desmarque uma para trocar.`);
+    }
+    senhasSelecionadas.push(n);
+  }
+
+  document.getElementById('numero-senha').value = senhasSelecionadas.join(',');
+  const label = senhasSelecionadas.length
+    ? `Senha${senhasSelecionadas.length>1?'s':''} escolhida${senhasSelecionadas.length>1?'s':''}: ${senhasSelecionadas.slice().sort((a,b)=>a-b).map(fmt).join(', ')}`
+    : '';
+  document.getElementById('senha-atual').textContent = label;
+  renderizarGradeSenhas();
 }
 
 function atualizarPills() {
   const cfg = CONFIG[catAtual];
   const d = cfg.total - cfg.ocupadas.size;
-  const pendentes = cfg.ocupadas.size - cfg.confirmadas;
+  const pendentes = cfg.ocupadas.size - cfg.confirmadas.size;
   document.getElementById('pill-total').textContent = `Total: ${cfg.total}`;
   document.getElementById('pill-disp').textContent  = `Disponíveis: ${d}`;
   document.getElementById('pill-ocup').textContent  = `Reservadas: ${pendentes}`;
-  document.getElementById('pill-conf').textContent  = `Confirmadas: ${cfg.confirmadas}`;
+  document.getElementById('pill-conf').textContent  = `Confirmadas: ${cfg.confirmadas.size}`;
 }
 
 function erro(msg) {
@@ -394,9 +465,10 @@ function carregarOcupadas() {
       if (res && res.ocupadas) {
         CONFIG.local.ocupadas = new Set(res.ocupadas.local || []);
         CONFIG.fora.ocupadas  = new Set(res.ocupadas.fora  || []);
-        CONFIG.local.confirmadas = (res.confirmadas && res.confirmadas.local) || 0;
-        CONFIG.fora.confirmadas  = (res.confirmadas && res.confirmadas.fora)  || 0;
+        CONFIG.local.confirmadas = new Set((res.confirmadas && res.confirmadas.local) || []);
+        CONFIG.fora.confirmadas  = new Set((res.confirmadas && res.confirmadas.fora)  || []);
         atualizarPills();
+        renderizarGradeSenhas();
       }
     })
     .catch(() => {
@@ -424,19 +496,23 @@ function confirmarReserva() {
   if(!ce) return erro('Informe o nome do cavalo de esteira.');
   if(!r) return erro('Informe a representação / cidade.');
   if(!w) return erro('Informe o WhatsApp para contato.');
+  if(senhasSelecionadas.length === 0) return erro('Escolha ao menos 1 número de senha na grade acima.');
 
   const cfg = CONFIG[catAtual];
-  const s = proximaSenhaDisponivel(catAtual);
-  if(s === null) return erro('Todas as senhas dessa categoria já foram reservadas.');
+  const conflitantes = senhasSelecionadas.filter(n => cfg.ocupadas.has(n));
+  if(conflitantes.length) return erro('Uma das senhas escolhidas acabou de ser reservada por outra pessoa. Revise sua seleção.');
 
-  cfg.ocupadas.add(s);
+  const senhasOrdenadas = senhasSelecionadas.slice().sort((a,b)=>a-b);
+  senhasOrdenadas.forEach(n => cfg.ocupadas.add(n));
   atualizarPills();
+  renderizarGradeSenhas();
   const catLabel = catAtual==='local' ? '📍 Categoria Local' : '✈️ Categoria de Fora';
+  const senhasFmt = senhasOrdenadas.map(fmt);
   const campos=[
     ['Categoria', catLabel],
     ['Vaqueiro puxador',p],['Cavalo de puxada',cp],
     ['Vaqueiro estereiro',e],['Cavalo de esteira',ce],
-    ['Senha',fmt(s)],['Representação',r],['WhatsApp',w]
+    ['Senha'+(senhasFmt.length>1?'s':''),senhasFmt.join(', ')],['Representação',r],['WhatsApp',w]
   ];
   document.getElementById('resumo-container').innerHTML=
     campos.map(([k,val])=>`<div class="r-linha"><span class="r-key">${k}</span><span class="r-val">${val}</span></div>`).join('');
@@ -448,7 +524,7 @@ function confirmarReserva() {
     cavaloPuxada: cp,
     estereiro: e,
     cavaloEsteira: ce,
-    senha: fmt(s),
+    senhas: senhasFmt,
     representacao: r,
     whatsapp: w
   });
@@ -461,11 +537,11 @@ function confirmarReserva() {
 *Cavalo de Puxada:* ${cp}
 *Vaqueiro Estereiro:* ${e}
 *Cavalo de Esteira:* ${ce}
-*Senha:* ${fmt(s)} (pré-reservada, aguardando confirmação de pagamento)
+*Senha${senhasFmt.length>1?'s':''}:* ${senhasFmt.join(', ')} (pré-reservada${senhasFmt.length>1?'s':''}, aguardando confirmação de pagamento)
 *Representação:* ${r}
 *WhatsApp:* ${w}
 
-_Envie o comprovante de pagamento para confirmar sua senha._
+_Envie o comprovante de pagamento para confirmar sua${senhasFmt.length>1?'s':''} senha${senhasFmt.length>1?'s':''}._
 _18, 19 e 20 de Setembro de 2026 • Abaiara–CE_`);
   document.getElementById('btn-wpp-sucesso').href=`https://wa.me/${WPP}?text=${txt}`;
   document.getElementById('form-container').style.display='none';
@@ -476,13 +552,13 @@ _18, 19 e 20 de Setembro de 2026 • Abaiara–CE_`);
 function abrirWppDireto(ev) {
   ev.preventDefault();
   const p=v('nome-puxador')||'(não informado)';
-  const s=document.getElementById('numero-senha').value;
+  const s=senhasSelecionadas.slice().sort((a,b)=>a-b).map(fmt).join(', ');
   const catLabel = catAtual==='local' ? 'Local' : 'De Fora';
   const txt=encodeURIComponent(
 `🤠 *INTERESSE — VAQUEJADA DE SETEMBRO 2026*
 *Categoria:* ${catLabel}
 *Puxador:* ${p}
-*Senha desejada:* ${s?fmt(s):'A definir'}`);
+*Senha(s) desejada(s):* ${s || 'A definir'}`);
   window.open(`https://wa.me/${WPP}?text=${txt}`,'_blank');
 }
 
@@ -493,11 +569,15 @@ function novaReserva() {
     document.getElementById(id).value='';
   });
   document.getElementById('numero-senha').value='';
+  senhasSelecionadas = [];
+  document.getElementById('senha-atual').textContent = '';
+  renderizarGradeSenhas();
 }
 
 function v(id) { return document.getElementById(id).value.trim(); }
 
 atualizarPills();
+renderizarGradeSenhas();
 carregarOcupadas();
 </script>
 </body>
