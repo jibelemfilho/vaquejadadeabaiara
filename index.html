@@ -82,10 +82,8 @@ body{font-family:'Barlow',sans-serif;background:var(--marrom);color:var(--creme)
 .pat-h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(30px,8vw,52px);letter-spacing:.04em;color:var(--creme);line-height:1;}
 .logo-track{display:flex;width:max-content;animation:slide-logos 28s linear infinite;}
 .logo-track:hover{animation-play-state:paused;}
-.logo-item{flex-shrink:0;width:200px;height:110px;display:flex;align-items:center;justify-content:center;padding:16px 20px;margin:0 12px;background:rgba(245,237,216,.06);border:1px solid rgba(201,145,42,.15);border-radius:8px;}
-.logo-item img{max-width:100%;max-height:78px;object-fit:contain;filter:brightness(1.05);transition:filter .2s;}
-.logo-item-full{padding:0;}
-.logo-item-full img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:cover;}
+.logo-item{flex-shrink:0;width:200px;height:110px;display:flex;align-items:center;justify-content:center;padding:0;margin:0 12px;background:rgba(245,237,216,.06);border:1px solid rgba(201,145,42,.15);border-radius:8px;overflow:hidden;}
+.logo-item img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:cover;filter:brightness(1.05);transition:filter .2s;}
 .logo-item:hover img{filter:brightness(1.2);}
 @keyframes slide-logos{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
@@ -259,16 +257,7 @@ footer{background:var(--marrom);border-top:1px solid rgba(201,145,42,.12);paddin
     <h2 class="pat-h2">Patrocinadores</h2>
   </div>
   <div style="overflow:hidden;">
-    <div class="logo-track">
-      <div class="logo-item logo-item-full"><img src="images/patrocinadores/agility.png" alt="Agility Telecom"></div>
-<div class="logo-item logo-item-full"><img src="images/patrocinadores/duo-vida.png" alt="Duo Vida"></div>
-<div class="logo-item logo-item-full"><img src="images/patrocinadores/posto-p-cicero-abaiara.png" alt="Posto P. Cícero (Abaiara)"></div>
-<div class="logo-item logo-item-full"><img src="images/patrocinadores/wilsonfilho.png" alt="Wilson Filho"></div>
-<div class="logo-item logo-item-full"><img src="images/patrocinadores/juarez.png" alt="Juarez"></div>
-<div class="logo-item logo-item-full"><img src="images/patrocinadores/iascara.png" alt="Iascara"></div>
-<div class="logo-item logo-item-full"><img src="images/patrocinadores/junior-amanda.png" alt="Junior e Amanda"></div>
-
-    </div>
+    <div class="logo-track" id="logo-track"></div>
   </div>
 </section>
 
@@ -371,6 +360,31 @@ footer{background:var(--marrom);border-top:1px solid rgba(201,145,42,.12);paddin
 
 <script>
 const WPP = '5588997196288';
+
+/* ====================================================================
+   PATROCINADORES — edite SÓ esta lista pra adicionar/remover/trocar.
+   Não precisa duplicar nada nem mexer em HTML — a rolagem é gerada
+   automaticamente a partir daqui.
+   ==================================================================== */
+const PATROCINADORES = [
+  { nome: 'Agility Telecom',            img: 'images/patrocinadores/agility.png' },
+  { nome: 'Duo Vida',                   img: 'images/patrocinadores/duo-vida.png' },
+  { nome: 'Posto P. Cícero (Abaiara)',  img: 'images/patrocinadores/posto-p-cicero-abaiara.png' },
+  { nome: 'Wilson Filho',               img: 'images/patrocinadores/wilsonfilho.png' },
+  { nome: 'Juarez',                     img: 'images/patrocinadores/juarez.png' },
+  { nome: 'Iascara',                    img: 'images/patrocinadores/iascara.png' },
+  { nome: 'Junior e Amanda',            img: 'images/patrocinadores/junior-amanda.png' }
+];
+
+function renderizarPatrocinadores() {
+  const track = document.getElementById('logo-track');
+  if (!track) return;
+  const itemHtml = PATROCINADORES
+    .map(p => `<div class="logo-item"><img src="${p.img}" alt="${p.nome}"></div>`)
+    .join('');
+  // Duplica a lista automaticamente (2x) para o efeito de rolagem contínua
+  track.innerHTML = itemHtml + itemHtml;
+}
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxkNa41s9UPezbO9CQjnJqs6we97D8KonA8mOikGgx38e83nBjVgPXO6s3H3Feb4EQR/exec';
 const CHAVE_SECRETA = '40056b334e54db6af71553f0155b4f60'; // precisa ser IGUAL à do Apps Script
 const CONFIG = {
@@ -457,36 +471,41 @@ function erro(msg) {
 
 function fmt(n) { return `Nº ${String(parseInt(n)).padStart(3,'0')}`; }
 
-function carregarOcupadas() {
+async function carregarOcupadas() {
   if (!SHEET_URL || SHEET_URL.includes('COLE_AQUI')) return;
-  fetch(SHEET_URL)
-    .then(r => r.json())
-    .then(res => {
-      if (res && res.ocupadas) {
-        CONFIG.local.ocupadas = new Set(res.ocupadas.local || []);
-        CONFIG.fora.ocupadas  = new Set(res.ocupadas.fora  || []);
-        CONFIG.local.confirmadas = new Set((res.confirmadas && res.confirmadas.local) || []);
-        CONFIG.fora.confirmadas  = new Set((res.confirmadas && res.confirmadas.fora)  || []);
-        atualizarPills();
-        renderizarGradeSenhas();
-      }
-    })
-    .catch(() => {
-      // se não conseguir carregar, o site continua funcionando com a contagem local
+  try {
+    const r = await fetch(SHEET_URL);
+    const res = await r.json();
+    if (res && res.ocupadas) {
+      CONFIG.local.ocupadas = new Set(res.ocupadas.local || []);
+      CONFIG.fora.ocupadas  = new Set(res.ocupadas.fora  || []);
+      CONFIG.local.confirmadas = new Set((res.confirmadas && res.confirmadas.local) || []);
+      CONFIG.fora.confirmadas  = new Set((res.confirmadas && res.confirmadas.fora)  || []);
+      atualizarPills();
+      renderizarGradeSenhas();
+    }
+  } catch (err) {
+    // se não conseguir carregar, o site continua funcionando com a contagem local
+  }
+}
+
+async function enviarParaPlanilha(dados) {
+  if (!SHEET_URL || SHEET_URL.includes('COLE_AQUI')) return { status: 'ok' };
+  try {
+    const resp = await fetch(SHEET_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(dados)
     });
+    const json = await resp.json();
+    return json;
+  } catch (err) {
+    // Se não der pra ler a resposta (ex: bloqueio de rede), avisa que não foi possível confirmar
+    return { status: 'erro', mensagem: 'Não foi possível confirmar com o servidor. Verifique sua internet e tente novamente.' };
+  }
 }
 
-function enviarParaPlanilha(dados) {
-  if (!SHEET_URL || SHEET_URL.includes('COLE_AQUI')) return;
-  fetch(SHEET_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify(dados)
-  }).catch(() => {});
-}
-
-function confirmarReserva() {
+async function confirmarReserva() {
   const p=v('nome-puxador'), e=v('nome-estereiro'),
         cp=v('cavalo-puxada'), ce=v('cavalo-esteira'),
         r=v('representacao'), w=v('whatsapp');
@@ -499,25 +518,19 @@ function confirmarReserva() {
   if(senhasSelecionadas.length === 0) return erro('Escolha ao menos 1 número de senha na grade acima.');
 
   const cfg = CONFIG[catAtual];
-  const conflitantes = senhasSelecionadas.filter(n => cfg.ocupadas.has(n));
-  if(conflitantes.length) return erro('Uma das senhas escolhidas acabou de ser reservada por outra pessoa. Revise sua seleção.');
+  const conflitantesLocal = senhasSelecionadas.filter(n => cfg.ocupadas.has(n));
+  if(conflitantesLocal.length) return erro('Uma das senhas escolhidas acabou de ser reservada por outra pessoa. Revise sua seleção.');
 
   const senhasOrdenadas = senhasSelecionadas.slice().sort((a,b)=>a-b);
-  senhasOrdenadas.forEach(n => cfg.ocupadas.add(n));
-  atualizarPills();
-  renderizarGradeSenhas();
-  const catLabel = catAtual==='local' ? '📍 Categoria Local' : '✈️ Categoria de Fora';
   const senhasFmt = senhasOrdenadas.map(fmt);
-  const campos=[
-    ['Categoria', catLabel],
-    ['Vaqueiro puxador',p],['Cavalo de puxada',cp],
-    ['Vaqueiro estereiro',e],['Cavalo de esteira',ce],
-    ['Senha'+(senhasFmt.length>1?'s':''),senhasFmt.join(', ')],['Representação',r],['WhatsApp',w]
-  ];
-  document.getElementById('resumo-container').innerHTML=
-    campos.map(([k,val])=>`<div class="r-linha"><span class="r-key">${k}</span><span class="r-val">${val}</span></div>`).join('');
+  const catLabel = catAtual==='local' ? '📍 Categoria Local' : '✈️ Categoria de Fora';
 
-  enviarParaPlanilha({
+  const btn = document.getElementById('btn-reservar');
+  const textoOriginal = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Confirmando com o servidor...';
+
+  const resultado = await enviarParaPlanilha({
     chave: CHAVE_SECRETA,
     categoria: catAtual==='local' ? 'Local' : 'De Fora',
     puxador: p,
@@ -528,6 +541,32 @@ function confirmarReserva() {
     representacao: r,
     whatsapp: w
   });
+
+  btn.disabled = false;
+  btn.textContent = textoOriginal;
+
+  if (!resultado || resultado.status !== 'ok') {
+    // Alguém pode ter pego a senha antes — atualiza a grade com o estado real e avisa
+    await carregarOcupadas();
+    senhasSelecionadas = senhasSelecionadas.filter(n => !cfg.ocupadas.has(n));
+    document.getElementById('numero-senha').value = senhasSelecionadas.join(',');
+    renderizarGradeSenhas();
+    return erro((resultado && resultado.mensagem) || 'Uma das senhas escolhidas já foi reservada por outra pessoa. Escolha novamente.');
+  }
+
+  // Servidor confirmou — agora sim trava localmente
+  senhasOrdenadas.forEach(n => cfg.ocupadas.add(n));
+  atualizarPills();
+  renderizarGradeSenhas();
+
+  const campos=[
+    ['Categoria', catLabel],
+    ['Vaqueiro puxador',p],['Cavalo de puxada',cp],
+    ['Vaqueiro estereiro',e],['Cavalo de esteira',ce],
+    ['Senha'+(senhasFmt.length>1?'s':''),senhasFmt.join(', ')],['Representação',r],['WhatsApp',w]
+  ];
+  document.getElementById('resumo-container').innerHTML=
+    campos.map(([k,val])=>`<div class="r-linha"><span class="r-key">${k}</span><span class="r-val">${val}</span></div>`).join('');
 
   const txt=encodeURIComponent(
 `🤠 *PRÉ-RESERVA DE SENHA — VAQUEJADA DE SETEMBRO 2026*
@@ -576,9 +615,29 @@ function novaReserva() {
 
 function v(id) { return document.getElementById(id).value.trim(); }
 
+async function atualizacaoPeriodica() {
+  await carregarOcupadas();
+  // Se alguma senha que a pessoa tinha selecionado foi pega por outra pessoa
+  // enquanto o formulário estava aberto, remove da seleção e avisa.
+  const cfg = CONFIG[catAtual];
+  const perdidas = senhasSelecionadas.filter(n => cfg.ocupadas.has(n));
+  if (perdidas.length) {
+    senhasSelecionadas = senhasSelecionadas.filter(n => !cfg.ocupadas.has(n));
+    document.getElementById('numero-senha').value = senhasSelecionadas.join(',');
+    const label = senhasSelecionadas.length
+      ? `Senha${senhasSelecionadas.length>1?'s':''} escolhida${senhasSelecionadas.length>1?'s':''}: ${senhasSelecionadas.slice().sort((a,b)=>a-b).map(fmt).join(', ')}`
+      : '';
+    document.getElementById('senha-atual').textContent = label;
+    erro(`A senha ${perdidas.map(fmt).join(', ')} acabou de ser reservada por outra pessoa e foi removida da sua seleção.`);
+    renderizarGradeSenhas();
+  }
+}
+
 atualizarPills();
 renderizarGradeSenhas();
+renderizarPatrocinadores();
 carregarOcupadas();
+setInterval(atualizacaoPeriodica, 20000);
 </script>
 </body>
 </html>
