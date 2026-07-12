@@ -29,6 +29,10 @@ body{font-family:'Barlow',sans-serif;background:var(--marrom);color:var(--creme)
 .nav-links a:hover{color:var(--dourado-claro);}
 .nav-links a.nav-rainha{color:var(--rainha-rosa-vivo);}
 .nav-links a.nav-rainha:hover{color:var(--dourado-claro);}
+.nav-btn{padding:8px 18px;border-radius:20px;background:var(--laranja);color:var(--creme)!important;}
+.nav-btn:hover{background:var(--laranja-vivo);color:var(--creme)!important;}
+.nav-btn-rainha{padding:8px 18px;border-radius:20px;background:var(--rainha-rosa);color:var(--creme)!important;}
+.nav-btn-rainha:hover{background:var(--rainha-rosa-vivo);color:var(--creme)!important;}
 .nav-toggle{display:none;background:none;border:none;color:var(--creme);font-size:26px;cursor:pointer;}
 @media(max-width:720px){
   .nav-links{position:fixed;top:52px;left:0;right:0;background:rgba(28,10,0,.98);flex-direction:column;gap:0;max-height:0;overflow:hidden;transition:max-height .25s ease;}
@@ -138,10 +142,11 @@ body{padding-top:52px;}
 @media(max-width:520px){.form-grid{grid-template-columns:1fr;}}
 .campo-full{grid-column:1/-1;}
 .campo label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dourado);margin-bottom:6px;}
-.campo input,.campo select{width:100%;background:rgba(245,237,216,.06);border:1px solid rgba(201,145,42,.25);border-radius:4px;padding:13px 14px;color:var(--creme);font-family:'Barlow',sans-serif;font-size:15px;outline:none;transition:border-color .2s,background .2s;-webkit-appearance:none;}
+.campo input,.campo select,.campo textarea{width:100%;background:rgba(245,237,216,.06);border:1px solid rgba(201,145,42,.25);border-radius:4px;padding:13px 14px;color:var(--creme);font-family:'Barlow',sans-serif;font-size:15px;outline:none;transition:border-color .2s,background .2s;-webkit-appearance:none;}
+.campo textarea{resize:vertical;min-height:100px;font-family:'Barlow',sans-serif;line-height:1.5;}
 .campo select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C9912A' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:12px;padding-right:38px;cursor:pointer;}
 .campo select option{background:var(--marrom);color:var(--creme);}
-.campo input:focus,.campo select:focus{border-color:var(--dourado);background:rgba(245,237,216,.1);}
+.campo input:focus,.campo select:focus,.campo textarea:focus{border-color:var(--dourado);background:rgba(245,237,216,.1);}
 .campo input::placeholder{color:rgba(245,237,216,.28);}
 .form-div{border:none;border-top:1px solid rgba(201,145,42,.15);margin:1.5rem 0;}
 .sec-form-titulo{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--terra);margin-bottom:1.25rem;display:flex;align-items:center;gap:10px;}
@@ -235,8 +240,8 @@ footer{background:var(--marrom);border-top:1px solid rgba(201,145,42,.12);paddin
       <li><a href="#hero">Início</a></li>
       <li><a href="#categorias">Categorias</a></li>
       <li><a href="#patrocinadores">Patrocinadores</a></li>
-      <li><a href="#inscricao">Inscrição Vaqueiro</a></li>
-      <li><a href="#rainha" class="nav-rainha">&#128081; Rainha da Vaquejada</a></li>
+      <li><a href="#inscricao" class="nav-btn">Inscrição Vaquejada</a></li>
+      <li><a href="#rainha" class="nav-btn-rainha">&#128081; Rainha da Vaquejada</a></li>
     </ul>
   </div>
 </nav>
@@ -463,6 +468,10 @@ footer{background:var(--marrom);border-top:1px solid rgba(201,145,42,.12);paddin
         <div class="campo campo-full">
           <label>Representação / Cidade</label>
           <input type="text" id="r-representacao" placeholder="Ex: Abaiara – CE" autocomplete="off">
+        </div>
+        <div class="campo campo-full">
+          <label>O que significa, para você, representar a tradição e a cultura da Vaquejada de Abaiara como Rainha?</label>
+          <textarea id="r-motivacao" placeholder="Escreva sua resposta aqui..."></textarea>
         </div>
       </div>
 
@@ -761,6 +770,7 @@ async function inscreverRainha() {
   const nascimento = v('r-nascimento');
   const whatsapp = v('r-whatsapp');
   const representacao = v('r-representacao');
+  const motivacao = v('r-motivacao');
 
   if (!nome) return erro('Informe o nome completo da candidata.', 'msg-erro-rainha');
   if (!nascimento) return erro('Informe a data de nascimento.', 'msg-erro-rainha');
@@ -769,6 +779,7 @@ async function inscreverRainha() {
   if (idade < 15) return erro('A idade mínima para participar é 15 anos.', 'msg-erro-rainha');
   if (!whatsapp) return erro('Informe o WhatsApp para contato.', 'msg-erro-rainha');
   if (!representacao) return erro('Informe a representação / cidade.', 'msg-erro-rainha');
+  if (!motivacao) return erro('Responda o que representar a Rainha da Vaquejada significa para você.', 'msg-erro-rainha');
 
   const btn = document.getElementById('btn-rainha');
   const textoOriginal = btn.textContent;
@@ -783,7 +794,8 @@ async function inscreverRainha() {
     idade: idade,
     menorDeIdade: idade < 18 ? 'Sim' : 'Não',
     representacao: representacao,
-    whatsapp: whatsapp
+    whatsapp: whatsapp,
+    motivacao: motivacao
   });
 
   btn.disabled = false;
@@ -801,6 +813,9 @@ async function inscreverRainha() {
 *Representação:* ${representacao}
 *WhatsApp:* ${whatsapp}
 
+*O que significa representar a Vaquejada de Abaiara:*
+${motivacao}
+
 _Inscrição pré-registrada, aguardando confirmação da organização._
 _Desfile: 18 de Setembro de 2026 • Abaiara–CE_`);
   document.getElementById('btn-wpp-rainha').href = `https://wa.me/${WPP_RAINHA}?text=${txt}`;
@@ -812,7 +827,7 @@ _Desfile: 18 de Setembro de 2026 • Abaiara–CE_`);
 function novaInscricaoRainha() {
   document.getElementById('tela-sucesso-rainha').style.display='none';
   document.getElementById('rainha-form-container').style.display='block';
-  ['r-nome','r-nascimento','r-whatsapp','r-representacao'].forEach(id=>{
+  ['r-nome','r-nascimento','r-whatsapp','r-representacao','r-motivacao'].forEach(id=>{
     document.getElementById(id).value='';
   });
 }
