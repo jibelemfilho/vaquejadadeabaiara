@@ -35,9 +35,11 @@ body{font-family:'Barlow',sans-serif;background:var(--marrom);color:var(--creme)
 .nav-btn-rainha:hover{background:var(--rainha-rosa-vivo);color:var(--creme)!important;}
 .nav-toggle{display:none;background:none;border:none;color:var(--creme);font-size:26px;cursor:pointer;}
 @media(max-width:720px){
-  .nav-links{position:fixed;top:52px;left:0;right:0;background:rgba(28,10,0,.98);flex-direction:column;gap:0;max-height:0;overflow:hidden;transition:max-height .25s ease;}
-  .nav-links.aberto{max-height:400px;}
-  .nav-links a{padding:14px 1.5rem;border-bottom:1px solid rgba(201,145,42,.1);}
+  .nav-links{position:fixed;top:52px;left:0;right:0;background:rgba(28,10,0,.98);flex-direction:column;align-items:stretch;gap:0;max-height:0;overflow-y:auto;transition:max-height .25s ease;}
+  .nav-links.aberto{max-height:calc(100vh - 52px);}
+  .nav-links li{width:100%;}
+  .nav-links a{display:block;padding:14px 1.5rem;border-bottom:1px solid rgba(201,145,42,.1);}
+  .nav-links a.nav-btn,.nav-links a.nav-btn-rainha{border-radius:0;padding:16px 1.5rem;text-align:center;margin:0;}
   .nav-toggle{display:block;}
 }
 body{padding-top:52px;}
@@ -179,6 +181,13 @@ body{padding-top:52px;}
 .rainha-info-linha:last-child{border-bottom:none;}
 .rainha-info-linha b{color:var(--dourado-claro);min-width:120px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:12.5px;}
 .rainha-aviso{max-width:660px;margin:0 auto 2.5rem;font-family:'Barlow',sans-serif;font-size:13.5px;line-height:1.6;color:var(--creme2);background:rgba(224,193,42,.08);border:1px solid rgba(224,193,42,.3);border-radius:8px;padding:1rem 1.25rem;}
+.rainha-info-restricao{background:rgba(107,167,207,.08);border:1px solid rgba(107,167,207,.3);border-radius:6px;padding:14px 16px;font-family:'Barlow',sans-serif;font-size:13.5px;line-height:1.55;color:var(--creme2);}
+.rainha-check-label{background:rgba(224,193,42,.08);border:1px solid rgba(224,193,42,.3);border-radius:8px;padding:1rem 1.25rem;}
+.rainha-aviso-texto{font-family:'Barlow',sans-serif;font-size:13.5px;font-weight:400;text-transform:none;letter-spacing:normal;line-height:1.6;color:var(--creme2);margin-bottom:14px;}
+.rainha-aviso-texto b{font-weight:700;color:var(--dourado-claro);}
+.campo .rainha-declaro{display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:0;}
+.rainha-declaro input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;accent-color:var(--rainha-rosa-vivo);cursor:pointer;}
+.campo .rainha-declaro span{font-family:'Barlow',sans-serif;font-size:13.5px;font-weight:700;text-transform:none;letter-spacing:normal;color:var(--creme);}
 
 .btn-rainha{background:var(--rainha-rosa-vivo);}
 .btn-rainha:hover{opacity:.88;}
@@ -445,10 +454,6 @@ footer{background:var(--marrom);border-top:1px solid rgba(201,145,42,.12);paddin
     <div class="rainha-info-linha"><b>Organização</b> Dr. Wilson Filho &amp; Dr. Junior Mamede</div>
   </div>
 
-  <div class="rainha-aviso">
-    ⚠️ Idade mínima para participar: <b>15 anos</b>. Candidatas menores de 18 anos deverão apresentar termo de autorização assinado pelos pais ou responsável legal no dia do evento.
-  </div>
-
   <div class="form-card" id="rainha-form-card">
     <div id="rainha-form-container">
       <div class="sec-form-titulo">Dados da candidata</div>
@@ -465,13 +470,21 @@ footer{background:var(--marrom);border-top:1px solid rgba(201,145,42,.12);paddin
           <label>WhatsApp para contato</label>
           <input type="tel" id="r-whatsapp" placeholder="(00) 9 0000-0000" autocomplete="off">
         </div>
-        <div class="campo campo-full">
-          <label>Representação / Cidade</label>
-          <input type="text" id="r-representacao" placeholder="Ex: Abaiara – CE" autocomplete="off">
+        <div class="campo campo-full rainha-info-restricao">
+          ℹ️ Participação exclusiva para candidatas <b>residentes em Abaiara/CE</b>, mediante apresentação de documento comprobatório de residência no dia do evento.
         </div>
         <div class="campo campo-full">
           <label>O que significa, para você, representar a tradição e a cultura da Vaquejada de Abaiara como Rainha?</label>
           <textarea id="r-motivacao" placeholder="Escreva sua resposta aqui..."></textarea>
+        </div>
+        <div class="campo campo-full">
+          <div class="rainha-check-label">
+            <p class="rainha-aviso-texto">⚠️ Idade mínima para participar: <b>15 anos</b>. Candidatas menores de 18 anos deverão apresentar termo de autorização assinado pelos pais ou responsável legal no dia do evento.</p>
+            <label class="rainha-declaro">
+              <input type="checkbox" id="r-aceite-idade">
+              <span>Declaro estar ciente desta condição.</span>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -769,8 +782,9 @@ async function inscreverRainha() {
   const nome = v('r-nome');
   const nascimento = v('r-nascimento');
   const whatsapp = v('r-whatsapp');
-  const representacao = v('r-representacao');
+  const representacao = 'Abaiara/CE';
   const motivacao = v('r-motivacao');
+  const aceitouIdade = document.getElementById('r-aceite-idade').checked;
 
   if (!nome) return erro('Informe o nome completo da candidata.', 'msg-erro-rainha');
   if (!nascimento) return erro('Informe a data de nascimento.', 'msg-erro-rainha');
@@ -778,8 +792,8 @@ async function inscreverRainha() {
   if (idade === null) return erro('Data de nascimento inválida.', 'msg-erro-rainha');
   if (idade < 15) return erro('A idade mínima para participar é 15 anos.', 'msg-erro-rainha');
   if (!whatsapp) return erro('Informe o WhatsApp para contato.', 'msg-erro-rainha');
-  if (!representacao) return erro('Informe a representação / cidade.', 'msg-erro-rainha');
   if (!motivacao) return erro('Responda o que representar a Rainha da Vaquejada significa para você.', 'msg-erro-rainha');
+  if (!aceitouIdade) return erro('Marque a caixinha confirmando ciência sobre a idade mínima.', 'msg-erro-rainha');
 
   const btn = document.getElementById('btn-rainha');
   const textoOriginal = btn.textContent;
@@ -827,9 +841,10 @@ _Desfile: 18 de Setembro de 2026 • Abaiara–CE_`);
 function novaInscricaoRainha() {
   document.getElementById('tela-sucesso-rainha').style.display='none';
   document.getElementById('rainha-form-container').style.display='block';
-  ['r-nome','r-nascimento','r-whatsapp','r-representacao','r-motivacao'].forEach(id=>{
+  ['r-nome','r-nascimento','r-whatsapp','r-motivacao'].forEach(id=>{
     document.getElementById(id).value='';
   });
+  document.getElementById('r-aceite-idade').checked = false;
 }
 
 async function atualizacaoPeriodica() {
