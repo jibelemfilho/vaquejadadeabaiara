@@ -14,9 +14,29 @@
   --marrom:#1C0A00;--marrom2:#2E1200;--marrom3:#4A1E08;
   --terra:#8B3A0F;
   --local:#E8751F;--fora:#C9912A;
+  --rainha-rosa:#C23B6B;--rainha-rosa-vivo:#E14F84;
 }
 html{scroll-behavior:smooth;}
 body{font-family:'Barlow',sans-serif;background:var(--marrom);color:var(--creme);min-height:100vh;}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(28,10,0,.92);backdrop-filter:blur(6px);border-bottom:1px solid rgba(201,145,42,.18);}
+.nav-inner{max-width:1100px;margin:0 auto;padding:14px 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.06em;color:var(--creme);white-space:nowrap;}
+.nav-logo span{color:var(--dourado-claro);}
+.nav-links{display:flex;gap:1.75rem;flex-wrap:wrap;list-style:none;}
+.nav-links a{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--creme2);text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--dourado-claro);}
+.nav-links a.nav-rainha{color:var(--rainha-rosa-vivo);}
+.nav-links a.nav-rainha:hover{color:var(--dourado-claro);}
+.nav-toggle{display:none;background:none;border:none;color:var(--creme);font-size:26px;cursor:pointer;}
+@media(max-width:720px){
+  .nav-links{position:fixed;top:52px;left:0;right:0;background:rgba(28,10,0,.98);flex-direction:column;gap:0;max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .nav-links.aberto{max-height:400px;}
+  .nav-links a{padding:14px 1.5rem;border-bottom:1px solid rgba(201,145,42,.1);}
+  .nav-toggle{display:block;}
+}
+body{padding-top:52px;}
 
 /* HERO */
 #hero{min-height:100vh;background:var(--marrom);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem 1.5rem 5rem;position:relative;overflow:hidden;}
@@ -134,6 +154,29 @@ body{font-family:'Barlow',sans-serif;background:var(--marrom);color:var(--creme)
 .btn-wpp:hover{background:#17924c;transform:translateY(-1px);}
 .msg-erro{color:#e07070;font-size:13px;margin-top:1rem;display:none;text-align:center;}
 #tela-sucesso{display:none;text-align:center;padding:1.5rem 0;}
+
+/* RAINHA DA VAQUEJADA */
+#rainha{background:linear-gradient(180deg,var(--marrom) 0%,#2A0E18 50%,var(--marrom) 100%);padding:4rem 1.5rem;}
+.rainha-topo{text-align:center;margin-bottom:2.5rem;}
+.rainha-label{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:.25em;text-transform:uppercase;color:var(--rainha-rosa-vivo);margin-bottom:.5rem;}
+.rainha-h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,9vw,64px);letter-spacing:.03em;color:var(--creme);line-height:1;}
+.rainha-h2 span{color:var(--rainha-rosa-vivo);}
+.rainha-data-desfile{font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:.1em;color:var(--dourado-claro);margin-top:.75rem;text-transform:uppercase;}
+
+.rainha-premios{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-width:760px;margin:0 auto 2.5rem;}
+@media(max-width:640px){.rainha-premios{grid-template-columns:1fr;}}
+.rainha-premio-box{background:rgba(194,59,107,.08);border:1px solid rgba(194,59,107,.3);border-radius:8px;padding:1.5rem 1rem;text-align:center;}
+.rainha-premio-titulo{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--creme2);margin-bottom:.5rem;}
+.rainha-premio-valor{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--rainha-rosa-vivo);}
+
+.rainha-info{max-width:660px;margin:0 auto 2.5rem;background:rgba(28,10,0,.5);border:1px solid rgba(194,59,107,.2);border-radius:8px;padding:1.5rem 1.75rem;}
+.rainha-info-linha{display:flex;gap:10px;padding:.6rem 0;border-bottom:1px solid rgba(201,145,42,.1);font-family:'Barlow',sans-serif;font-size:14.5px;color:var(--creme2);}
+.rainha-info-linha:last-child{border-bottom:none;}
+.rainha-info-linha b{color:var(--dourado-claro);min-width:120px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:12.5px;}
+.rainha-aviso{max-width:660px;margin:0 auto 2.5rem;font-family:'Barlow',sans-serif;font-size:13.5px;line-height:1.6;color:var(--creme2);background:rgba(224,193,42,.08);border:1px solid rgba(224,193,42,.3);border-radius:8px;padding:1rem 1.25rem;}
+
+.btn-rainha{background:var(--rainha-rosa-vivo);}
+.btn-rainha:hover{opacity:.88;}
 .suc-icone{width:64px;height:64px;background:rgba(107,207,138,.12);border:2px solid #6bcf8a;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:26px;}
 .suc-titulo{font-family:'Bebas Neue',sans-serif;font-size:48px;color:#6bcf8a;margin-bottom:6px;}
 .suc-msg{font-size:15px;color:var(--creme2);margin-bottom:2rem;line-height:1.6;}
@@ -184,6 +227,19 @@ footer{background:var(--marrom);border-top:1px solid rgba(201,145,42,.12);paddin
 </style>
 </head>
 <body>
+<nav class="nav">
+  <div class="nav-inner">
+    <span class="nav-logo">Vaquejada <span>de Setembro</span></span>
+    <button class="nav-toggle" id="nav-toggle" onclick="document.getElementById('nav-links').classList.toggle('aberto')">&#9776;</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#hero">Início</a></li>
+      <li><a href="#categorias">Categorias</a></li>
+      <li><a href="#patrocinadores">Patrocinadores</a></li>
+      <li><a href="#inscricao">Inscrição Vaqueiro</a></li>
+      <li><a href="#rainha" class="nav-rainha">&#128081; Rainha da Vaquejada</a></li>
+    </ul>
+  </div>
+</nav>
 
 <!-- HERO -->
 <section id="hero">
@@ -354,12 +410,87 @@ footer{background:var(--marrom);border-top:1px solid rgba(201,145,42,.12);paddin
   </div>
 </section>
 
+<!-- RAINHA DA VAQUEJADA -->
+<section id="rainha">
+  <div class="rainha-topo">
+    <div class="rainha-label">Inscrições abertas</div>
+    <h2 class="rainha-h2">&#128081; Rainha <span>da Vaquejada</span></h2>
+    <div class="rainha-data-desfile">Desfile: 18 de Setembro de 2026</div>
+  </div>
+
+  <div class="rainha-premios">
+    <div class="rainha-premio-box">
+      <div class="rainha-premio-titulo">Rainha da Vaquejada</div>
+      <div class="rainha-premio-valor">R$ 1.000</div>
+    </div>
+    <div class="rainha-premio-box">
+      <div class="rainha-premio-titulo">Musa da Vaquejada</div>
+      <div class="rainha-premio-valor">R$ 600</div>
+    </div>
+    <div class="rainha-premio-box">
+      <div class="rainha-premio-titulo">Destaque da Vaquejada</div>
+      <div class="rainha-premio-valor">R$ 400</div>
+    </div>
+  </div>
+
+  <div class="rainha-info">
+    <div class="rainha-info-linha"><b>Inscrições</b> De 12 de julho até 02 de agosto de 2026</div>
+    <div class="rainha-info-linha"><b>Desfile</b> 18 de setembro de 2026</div>
+    <div class="rainha-info-linha"><b>Local</b> Parque de Vaquejada Zélia Leite Dantas — Abaiara/CE</div>
+    <div class="rainha-info-linha"><b>Organização</b> Dr. Wilson Filho &amp; Dr. Junior Mamede</div>
+  </div>
+
+  <div class="rainha-aviso">
+    ⚠️ Idade mínima para participar: <b>15 anos</b>. Candidatas menores de 18 anos deverão apresentar termo de autorização assinado pelos pais ou responsável legal no dia do evento.
+  </div>
+
+  <div class="form-card" id="rainha-form-card">
+    <div id="rainha-form-container">
+      <div class="sec-form-titulo">Dados da candidata</div>
+      <div class="form-grid">
+        <div class="campo campo-full">
+          <label>Nome completo</label>
+          <input type="text" id="r-nome" placeholder="Nome completo da candidata" autocomplete="off">
+        </div>
+        <div class="campo">
+          <label>Data de nascimento</label>
+          <input type="date" id="r-nascimento">
+        </div>
+        <div class="campo">
+          <label>WhatsApp para contato</label>
+          <input type="tel" id="r-whatsapp" placeholder="(00) 9 0000-0000" autocomplete="off">
+        </div>
+        <div class="campo campo-full">
+          <label>Representação / Cidade</label>
+          <input type="text" id="r-representacao" placeholder="Ex: Abaiara – CE" autocomplete="off">
+        </div>
+      </div>
+
+      <p class="msg-erro" id="msg-erro-rainha"></p>
+      <button class="btn-reservar btn-rainha" id="btn-rainha" onclick="inscreverRainha()">Inscrever candidata</button>
+    </div>
+
+    <div id="tela-sucesso-rainha" style="display:none;text-align:center;padding:1.5rem 0;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--rainha-rosa-vivo);margin-bottom:.5rem;">Inscrição enviada!</div>
+      <p style="color:var(--creme2);font-size:14.5px;line-height:1.6;margin-bottom:1.5rem;">
+        Sua inscrição foi registrada. Clique abaixo para confirmar diretamente com a organização pelo WhatsApp.
+      </p>
+      <a class="btn-wpp" id="btn-wpp-rainha" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Confirmar pelo WhatsApp
+      </a>
+      <button class="btn-nova" onclick="novaInscricaoRainha()">Inscrever outra candidata</button>
+    </div>
+  </div>
+</section>
+
 <footer>
   <p class="foot-txt">by Mickael Belém</p>
 </footer>
 
 <script>
 const WPP = '5588997196288';
+const WPP_RAINHA = '5588988868198';
 
 /* ====================================================================
    PATROCINADORES — edite SÓ esta lista pra adicionar/remover/trocar.
@@ -463,8 +594,8 @@ function atualizarPills() {
   document.getElementById('pill-conf').textContent  = `Confirmadas: ${cfg.confirmadas.size}`;
 }
 
-function erro(msg) {
-  const el = document.getElementById('msg-erro');
+function erro(msg, elId) {
+  const el = document.getElementById(elId || 'msg-erro');
   el.textContent = msg; el.style.display='block';
   setTimeout(()=>el.style.display='none', 4000);
 }
@@ -614,6 +745,77 @@ function novaReserva() {
 }
 
 function v(id) { return document.getElementById(id).value.trim(); }
+
+function calcularIdade(dataNascimentoStr) {
+  const nasc = new Date(dataNascimentoStr + 'T00:00:00');
+  if (isNaN(nasc.getTime())) return null;
+  const hoje = new Date();
+  let idade = hoje.getFullYear() - nasc.getFullYear();
+  const m = hoje.getMonth() - nasc.getMonth();
+  if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+  return idade;
+}
+
+async function inscreverRainha() {
+  const nome = v('r-nome');
+  const nascimento = v('r-nascimento');
+  const whatsapp = v('r-whatsapp');
+  const representacao = v('r-representacao');
+
+  if (!nome) return erro('Informe o nome completo da candidata.', 'msg-erro-rainha');
+  if (!nascimento) return erro('Informe a data de nascimento.', 'msg-erro-rainha');
+  const idade = calcularIdade(nascimento);
+  if (idade === null) return erro('Data de nascimento inválida.', 'msg-erro-rainha');
+  if (idade < 15) return erro('A idade mínima para participar é 15 anos.', 'msg-erro-rainha');
+  if (!whatsapp) return erro('Informe o WhatsApp para contato.', 'msg-erro-rainha');
+  if (!representacao) return erro('Informe a representação / cidade.', 'msg-erro-rainha');
+
+  const btn = document.getElementById('btn-rainha');
+  const textoOriginal = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  const resultado = await enviarParaPlanilha({
+    chave: CHAVE_SECRETA,
+    tipo: 'rainha',
+    nome: nome,
+    nascimento: nascimento,
+    idade: idade,
+    menorDeIdade: idade < 18 ? 'Sim' : 'Não',
+    representacao: representacao,
+    whatsapp: whatsapp
+  });
+
+  btn.disabled = false;
+  btn.textContent = textoOriginal;
+
+  if (!resultado || resultado.status !== 'ok') {
+    return erro((resultado && resultado.mensagem) || 'Não foi possível enviar. Tente novamente.', 'msg-erro-rainha');
+  }
+
+  const txt = encodeURIComponent(
+`👑 *INSCRIÇÃO — RAINHA DA VAQUEJADA 2026*
+
+*Nome:* ${nome}
+*Idade:* ${idade} anos${idade < 18 ? ' (menor de idade — apresentar termo de autorização assinado pelos pais/responsável no dia do evento)' : ''}
+*Representação:* ${representacao}
+*WhatsApp:* ${whatsapp}
+
+_Inscrição pré-registrada, aguardando confirmação da organização._
+_Desfile: 18 de Setembro de 2026 • Abaiara–CE_`);
+  document.getElementById('btn-wpp-rainha').href = `https://wa.me/${WPP_RAINHA}?text=${txt}`;
+
+  document.getElementById('rainha-form-container').style.display='none';
+  document.getElementById('tela-sucesso-rainha').style.display='block';
+}
+
+function novaInscricaoRainha() {
+  document.getElementById('tela-sucesso-rainha').style.display='none';
+  document.getElementById('rainha-form-container').style.display='block';
+  ['r-nome','r-nascimento','r-whatsapp','r-representacao'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+}
 
 async function atualizacaoPeriodica() {
   await carregarOcupadas();
